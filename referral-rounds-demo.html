@@ -272,7 +272,7 @@ footer{text-align:center;font-size:11px;color:var(--muted);padding:8px 20px 28px
     <div class="wlogo">Referral&nbsp;Rounds<span class="dot">.</span></div>
     <div class="wtag">The dead-simple visit tracker for physician liaisons. Your referring providers, sorted by city and volume, on your phone.</div>
     <button class="wbtn wprimary" onclick="document.getElementById('importfile').click()">Upload your CRM export</button>
-    <div class="wnote">Export your referring-provider report to Excel (ModMed and most systems work), then choose the file here.</div>
+    <div class="wnote">Export your referring-provider report to Excel (most CRM systems work), then choose the file here.</div>
     <button class="wbtn wghost" onclick="useSample()">Explore with sample data</button>
     <div id="impStatus" class="wstatus"></div>
     <div class="wfoot">Everything stays on this device. Nothing is uploaded to any server.</div>
@@ -776,7 +776,7 @@ let sheetId=null, editing=false;
 function lastContact(id){
   let t=visited[id]||0;
   (visits[id]||[]).forEach(ts=>{ if(ts>t)t=ts; });
-  (notes[id]||[]).forEach(n=>{ if(n.ts>t)t=n.ts; });
+  (notes[id]||[]).forEach(n=>{ if(n.kind!=='vm' && n.ts>t)t=n.ts; });  // a voicemail is not a visit — don't let it reset "days since last visit"
   return t||0;
 }
 function sinceLabel(id){
@@ -1571,7 +1571,7 @@ if(PROVIDERS.length===0){ showWelcome(); }
 
 tally();render();
 
-// ---------- ModMed import (client-side) ----------
+// ---------- CRM referral import (client-side) ----------
 function pickCol(headers,...keys){
   const H=headers.map(h=>({raw:h,n:(h||'').toString().toLowerCase().replace(/\s+/g,' ').trim()}));
   for(const k of keys){ const hit=H.find(x=>x.n.includes(k)); if(hit) return hit.raw; }
